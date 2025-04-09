@@ -25,15 +25,8 @@ MENU_MAPA_DIS_GEOGRAFICA = "Distribucion Geográfica"
 MENU_MAPA_CALOR = "Mapa Calor"
 
 def configure_page():
-    # Construir la ruta relativa al archivo logo.ico dentro de la carpeta assets
-    logo_path = os.path.join(os.path.dirname(__file__), 'assets', 'logo.ico')
-
-    if os.path.exists(logo_path):
-        logo = Image.open(logo_path)
-        # Proceder con el uso de la imagen (por ejemplo, mostrarla)
-    else:
-        print(f"El archivo {logo_path} no se encuentra en la ruta especificada.")
-        # Puedes usar una imagen predeterminada o manejar el error de otra forma
+    logo = Image.open(os.path.join("assets","logo.ico"))
+    st.set_page_config(page_title=APP_TITLE, page_icon=logo, layout="wide")
 
 # Función para mostrar los datos con paginación
 def mostrar_datos_con_paginacion(df):
