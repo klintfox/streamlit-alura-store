@@ -1,0 +1,20 @@
+# Ignorar la carpeta venv
+venv/
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos de compilación y distribución
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pdb
+*.egg-info/
+dist/
+build/
+
+# Archivos de configuración de sistema
+.DS_Store
+Thumbs.db
