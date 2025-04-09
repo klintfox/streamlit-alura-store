@@ -3,13 +3,13 @@ import os
 import pandas as pd
 from PIL import Image
 
-from dataloader import cargar_csv
-from facturacion import calcular_ingreso_total
-from ventas_por_categoria import calcular_categorias_vendidas
-from calificacion_promedio import calcular_calificacion_promedio
-from productos_vendidos import productos_mas_menos_vendidos
-from costo_envio_por_tienda import calcular_promedio_costo_envio
-from utils import graficar_pie, graficar_barras, graficar_linea, graficar_productos_mas_menos_vendidos, graficar_costo_envio_por_tienda  
+from services.dataloader import cargar_csv
+from services.facturacion import calcular_ingreso_total
+from services.ventas_por_categoria import calcular_categorias_vendidas
+from services.calificacion_promedio import calcular_calificacion_promedio
+from services.productos_vendidos import productos_mas_menos_vendidos
+from services.costo_envio_por_tienda import calcular_promedio_costo_envio
+from services.utils import graficar_pie, graficar_barras, graficar_linea, graficar_productos_mas_menos_vendidos, graficar_costo_envio_por_tienda  
 
 import streamlit as st
 import streamlit.components.v1 as components
