@@ -1,7 +1,7 @@
 import streamlit as st
 import folium
 from folium.plugins import HeatMap
-from streamlit.components.v1 import html
+from folium.plugins import MarkerCluster  # Importa MarkerCluster
 
 # Función para crear un mapa de puntos
 def crear_mapa_distribucion(tienda, tienda_nombre, color_icono):
@@ -12,13 +12,16 @@ def crear_mapa_distribucion(tienda, tienda_nombre, color_icono):
     # Crear el mapa centrado en la tienda
     m = folium.Map(location=[prom_lat, prom_lon], zoom_start=6)
 
-    # Agregar los puntos de venta
+    # Crear un objeto MarkerCluster para agrupar los marcadores
+    marker_cluster = MarkerCluster().add_to(m)
+
+   # Agregar los puntos de venta al grupo de marcadores
     for index, row in tienda.iterrows():
         folium.Marker(
             location=[row['lat'], row['lon']],
             popup=f"{tienda_nombre}: {row['Producto']}, {row['Cantidad de cuotas']} cuotas",
             icon=folium.Icon(color=color_icono, icon='info-sign')
-        ).add_to(m)
+        ).add_to(marker_cluster)
 
     # Guardar el mapa como un archivo HTML
     mapa_html = m._repr_html_()  # Obtiene el código HTML del mapa para insertarlo en Streamlit
