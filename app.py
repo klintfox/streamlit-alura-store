@@ -16,9 +16,11 @@ from services.costo_envio_por_tienda import calcular_promedio_costo_envio
 from services.utils import graficar_pie, graficar_barras, graficar_linea, graficar_productos_mas_menos_vendidos, graficar_costo_envio_por_tienda  
 from services.mapa_ubicacion import crear_mapa_distribucion, crear_mapa_calor
 
-from config import APP_TITLE, MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
+from config import APP_TITLE, MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, MENU_INFORME
 from config import TIENDA1, TIENDA2, TIENDA3, TIENDA4, TIENDAS
 from config import COLOR_TIENDA_F1, COLOR_TIENDA_F2, COLOR_TIENDA_F3, COLOR_TIENDA_F4
+from styles_dataframe import alinear_centrado, alinear_izquierda, alinear_derecha
+from informe.informe import mostrar_informe
 
 def configure_page():
     logo = Image.open(os.path.join("assets","logo.ico"))
@@ -26,18 +28,32 @@ def configure_page():
 
 # Función para mostrar los datos con paginación
 def mostrar_datos_con_paginacion(df):
-
-    # Paginador
+    # Tamaño de cada página
     page_size = 5
     total_pages = len(df) // page_size + (1 if len(df) % page_size != 0 else 0)
 
-    # Crear un selector para elegir la página
-    page = st.slider("Selecciona la página", min_value=1, max_value=total_pages, value=1)
+    # Inicializamos la página actual si no está en el session_state
+    if 'page' not in st.session_state:
+        st.session_state.page = 1
 
     # Mostrar los registros de la página seleccionada
-    start_row = (page - 1) * page_size
-    end_row = page * page_size
-    st.dataframe(df[start_row:end_row])
+    start_row = (st.session_state.page - 1) * page_size
+    end_row = st.session_state.page * page_size
+    st.dataframe(df[start_row:end_row])    
+
+    # Crear una fila con 2 columnas para los botones (uno para anterior, otro para siguiente)
+    col1, col2 = st.columns(2)  # Dos columnas para los botones
+
+    with col1:  # Columna izquierda para "Página Anterior"
+        if st.button('Página Anterior') and st.session_state.page > 1:
+            st.session_state.page -= 1
+
+    with col2:  # Columna derecha para "Página Siguiente"
+        if st.button('Página Siguiente') and st.session_state.page < total_pages:
+            st.session_state.page += 1
+
+    # Mostrar el número de la página actual
+    st.write(f"Página {st.session_state.page} de {total_pages}")
 
 # Cargar los datos
 url = "https://raw.githubusercontent.com/alura-es-cursos/challenge1-data-science-latam/refs/heads/main/base-de-datos-challenge1-latam/tienda_1%20.csv"
@@ -53,7 +69,7 @@ tienda4 = cargar_csv(url4)
 def main():
     configure_page()
     menu = [
-        MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR
+        MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, MENU_INFORME
     ]
 
     opcion = st.sidebar.selectbox("Selecciona una opción", menu)
@@ -83,6 +99,7 @@ def main():
             st.subheader("Datos de Tienda 4")
             mostrar_datos_con_paginacion(tienda4)
 
+
         st.subheader("1 Análisis de Facturación")        
         with st.expander("VER", expanded=False):
 
@@ -100,14 +117,18 @@ def main():
                     'Ingreso Total': [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
                 })
 
+               # Aplicar formato directamente en la columna (esto convierte los valores a strings)
+                ingresos_df['Ingreso Total'] = ingresos_df['Ingreso Total'].apply(lambda x: '${:,.2f} COP'.format(x))
+
+
                 # Mostrar los ingresos totales por tienda con la tabla centrada
                 st.markdown("<h4 style='text-align: center;'>Ingresos Totales por Tienda</h4>", unsafe_allow_html=True)
                 
-                # Estilo de la tabla centrado
+                # Estilo de la tabla
                 st.dataframe(
                 ingresos_df.style.set_table_styles([
-                        {'selector': 'th', 'props': [('text-align', 'center')]},  # Alineación de los encabezados
-                        {'selector': 'td', 'props': [('text-align', 'center')]}     # Alineación de las celdas
+                        {'selector': 'th', 'props': [('text-align', 'left')]},  # Alineación de los encabezados
+                        {'selector': 'td', 'props': [('text-align', 'left')]}     # Alineación de las celdas
                     ])
                 )
 
@@ -116,42 +137,33 @@ def main():
                 ingresos = [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
                 graficar_pie(ingresos)
 
+
         st.subheader("2 Ventas por Categoría")        
-        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente                     
+        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente
             
-            # Texto antes de la segunda línea horizontal
-            categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
-            categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
-            categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
-            categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
+            # Crear un diccionario que almacene las categorías de cada tienda
+            categorias_tiendas = {
+                TIENDA1: calcular_categorias_vendidas(tienda1, TIENDA1),
+                TIENDA2: calcular_categorias_vendidas(tienda2, TIENDA2),
+                TIENDA3: calcular_categorias_vendidas(tienda3, TIENDA3),
+                TIENDA4: calcular_categorias_vendidas(tienda4, TIENDA4)
+            }
 
             # Combo box para seleccionar la tienda
             opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_categoria")
 
-            if opcionCategoria == TIENDA1:
-                categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
-                st.subheader("Productos por categoría de Tienda 1")
-                st.dataframe(categorias_tienda1)
-
-            elif opcionCategoria == TIENDA2:
-                categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
-                st.subheader("Productos por categoría de Tienda 2")
-                st.dataframe(categorias_tienda2)
-
-            elif opcionCategoria == TIENDA3:
-                categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
-                st.subheader("Productos por categoría de Tienda 3")
-                st.dataframe(categorias_tienda3)
-
-            elif opcionCategoria == TIENDA4:
-                categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
-                st.subheader("Productos por categoría de Tienda 4")
-                st.dataframe(categorias_tienda4)
+            # Usar el diccionario para obtener las categorías de la tienda seleccionada
+            categorias_seleccionada = categorias_tiendas[opcionCategoria]
             
-            # Graficar ventas por categoría
-            graficar_barras(categorias_tienda1, categorias_tienda2, categorias_tienda3, categorias_tienda4)        
-
-
+            # Mostrar el nombre de la tienda y los productos vendidos por categoría
+            st.subheader(f"Productos Vendidos por categoría de {opcionCategoria}")
+            categorias_seleccionada = categorias_seleccionada.applymap(str)
+            st.dataframe(alinear_izquierda(categorias_seleccionada))
+                        
+            # Gráfico Cantidad de productos vendidos por Categoría
+            graficar_barras(categorias_tiendas[TIENDA1], categorias_tiendas[TIENDA2], categorias_tiendas[TIENDA3], 
+                            categorias_tiendas[TIENDA4])
+        
         st.subheader("3 Calificación Promedio de la Tienda por Clientes")        
         with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente                    
             #st.subheader("3 Calificación Promedio de Tienda por Clientes")
@@ -168,15 +180,18 @@ def main():
                     'Calificación': [calificacion_promedio1, calificacion_promedio2, calificacion_promedio3, calificacion_promedio4]
                 })
 
+                # Redondear la columna 'Calificación' a 2 decimales
+                calificacion_df['Calificación'] = calificacion_df['Calificación'].round(2)
+
                 # Mostrar los ingresos totales por tienda con la tabla centrada
                 st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)                
-                
+                # Aplicar estilos al DataFrame correcto (categorias_tienda1)
+                calificacion_df = calificacion_df.applymap(str)
                 # Estilo de la tabla centrado
                 st.dataframe(
-                    calificacion_df.style.set_table_styles([
-                        {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '16px'), ('border', '1px solid black')]},  # Alineación de los encabezados
-                        {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '14px'), ('border', '1px solid black')]},  # Alineación de las celdas
-                        {'selector': 'table', 'props': [('border-collapse', 'collapse')]},  # Unificar bordes de la tabla
+                calificacion_df.style.set_table_styles([
+                        {'selector': 'th', 'props': [('text-align', 'left')]},  # Alineación de los encabezados
+                        {'selector': 'td', 'props': [('text-align', 'left')]}     # Alineación de las celdas
                     ])
                 )
                 
@@ -190,12 +205,11 @@ def main():
                 }
 
                 # Ordenar las calificaciones de mejor a peor
-                calificaciones_ordenadas = dict(sorted(calificaciones.items(), key=lambda item: item[1], reverse=True))    
+                calificaciones_ordenadas = dict(sorted(calificaciones.items(), key=lambda item: item[1], reverse=True))
 
                 # Graficar calificación promedio
                 graficar_linea(calificaciones)
-
-        # 4 Productos Más y Menos Vendidos
+        
         st.subheader("4 Productos Más y Menos Vendidos")        
         with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente            
                
@@ -203,7 +217,7 @@ def main():
 
             # Mostrar el DataFrame de acuerdo a la tienda seleccionada
             if opcionCategoria == TIENDA1:
-                productos_df = productos_mas_menos_vendidos(tienda1, TIENDA1)
+                productos_df = productos_mas_menos_vendidos(tienda1, TIENDA1)                               
             elif opcionCategoria == TIENDA2:
                 productos_df = productos_mas_menos_vendidos(tienda2, TIENDA2)
             elif opcionCategoria == TIENDA3:
@@ -212,12 +226,12 @@ def main():
                 productos_df = productos_mas_menos_vendidos(tienda4, TIENDA4)
 
             # Mostrar el DataFrame
-            st.dataframe(productos_df)
+            productos_df = productos_df.applymap(str)
+            st.dataframe(alinear_izquierda(productos_df))
             
             # # Graficar los productos más y menos vendidos por tienda    
             graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4)
-
-        # 5 Costo de envío promedio por tienda
+        
         st.subheader("5 Costo de Envío Promedio por Tienda")
         with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente            
             
@@ -232,6 +246,9 @@ def main():
                     'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
                     'Costo Envío': [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
                 })
+
+                # Aplicar formato directamente en la columna (esto convierte los valores a strings)
+                costo_envio_df['Costo Envío'] = costo_envio_df['Costo Envío'].apply(lambda x: '${:,.2f} COP'.format(x))
 
                 # Mostrar los ingresos totales por tienda con la tabla centrada
                 st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)
@@ -307,7 +324,9 @@ def main():
                 html(mapa_calor_tienda4, height=500)
 
         st.markdown("<hr>", unsafe_allow_html=True)
-        # st.subheader("Análisis Geográfico de Ingresos y Calificaciones")
+    
+    if opcion == MENU_INFORME: 
+        mostrar_informe()        
 
 if __name__ == '__main__':
     main()

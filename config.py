@@ -5,6 +5,7 @@ APP_TITLE = "Alura Store"
 MENU_DATA_ANALYTICS = "Análisis de Datos"
 MENU_MAPA_DIS_GEOGRAFICA = "Distribución Geográfica"
 MENU_MAPA_CALOR = "Mapa de Calor"
+MENU_INFORME = "Informe"
 
 # Colores para las tiendas
 COLOR_TIENDA_1 = 'skyblue'
