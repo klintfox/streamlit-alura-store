@@ -7,7 +7,7 @@ def mostrar_informe():
     # Informe: Evaluación y Recomendación para la Tienda de Sr. Juan
     # Titulo Principal
     st.title("Informe Final: Evaluación y Recomendación para la Tienda de Sr. Juan")
-    st.markdown("**Alura Store - Ver proyecto publicado**")
+    st.markdown("**Alura Store**")
 
     # Sección de Introducción
     st.header("Introducción")
