@@ -34,7 +34,7 @@ def crear_mapa_calor(tienda, tienda_nombre,color_icono):
     prom_lon = tienda['lon'].mean()
 
     # Crear el mapa centrado en la tienda
-    m = folium.Map(location=[prom_lat, prom_lon], zoom_start=6)
+    m = folium.Map(location=[prom_lat, prom_lon], zoom_start=7)
 
     # Agregar el mapa de calor
     heat_data = [[row['lat'], row['lon']] for index, row in tienda.iterrows()]    

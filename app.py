@@ -60,8 +60,8 @@ def main():
 
     if opcion == MENU_DATA_ANALYTICS:
 
-        # Título de la sección
-        st.subheader("Datos")
+        # Título de la sección        
+        st.markdown("<h2 style='text-align: center;'>Análisis de Datos</h2>", unsafe_allow_html=True)
 
         # Combo box para seleccionar la tienda
         opcion = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_ingresos")
@@ -83,228 +83,228 @@ def main():
             st.subheader("Datos de Tienda 4")
             mostrar_datos_con_paginacion(tienda4)
 
-        # 1 Análisis de facturación
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("1 Análisis de Facturación")
+        st.subheader("1 Análisis de Facturación")        
+        with st.expander("VER", expanded=False):
 
-        # Crear columnas para mostrar los datos y el gráfico en una misma línea
-        col1_ingresos, col2_ingresos = st.columns(2)
-        with col1_ingresos:   
-            # Ingreso Total por tienda
-            ingreso_tienda1 = calcular_ingreso_total(tienda1)
-            ingreso_tienda2 = calcular_ingreso_total(tienda2)
-            ingreso_tienda3 = calcular_ingreso_total(tienda3)
-            ingreso_tienda4 = calcular_ingreso_total(tienda4)
+            # Crear columnas para mostrar los datos y el gráfico en una misma línea
+            col1_ingresos, col2_ingresos = st.columns(2)
+            with col1_ingresos:   
+                # Ingreso Total por tienda
+                ingreso_tienda1 = calcular_ingreso_total(tienda1)
+                ingreso_tienda2 = calcular_ingreso_total(tienda2)
+                ingreso_tienda3 = calcular_ingreso_total(tienda3)
+                ingreso_tienda4 = calcular_ingreso_total(tienda4)
 
-            ingresos_df = pd.DataFrame({
-                'Nro Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
-                'Ingreso Total': [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
-            })
+                ingresos_df = pd.DataFrame({
+                    'Nro Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
+                    'Ingreso Total': [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
+                })
 
-            # Mostrar los ingresos totales por tienda con la tabla centrada
-            st.markdown("<h4 style='text-align: center;'>Ingresos Totales por Tienda</h4>", unsafe_allow_html=True)
+                # Mostrar los ingresos totales por tienda con la tabla centrada
+                st.markdown("<h4 style='text-align: center;'>Ingresos Totales por Tienda</h4>", unsafe_allow_html=True)
+                
+                # Estilo de la tabla centrado
+                st.dataframe(
+                ingresos_df.style.set_table_styles([
+                        {'selector': 'th', 'props': [('text-align', 'center')]},  # Alineación de los encabezados
+                        {'selector': 'td', 'props': [('text-align', 'center')]}     # Alineación de las celdas
+                    ])
+                )
+
+            with col2_ingresos:
+                # 1 Graficar ingresos totales
+                ingresos = [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
+                graficar_pie(ingresos)
+
+        st.subheader("2 Ventas por Categoría")        
+        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente                     
             
-            # Estilo de la tabla centrado
-            st.dataframe(
-            ingresos_df.style.set_table_styles([
-                    {'selector': 'th', 'props': [('text-align', 'center')]},  # Alineación de los encabezados
-                    {'selector': 'td', 'props': [('text-align', 'center')]}     # Alineación de las celdas
-                ])
-            )
-
-        with col2_ingresos:
-            # 1 Graficar ingresos totales
-            ingresos = [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
-            graficar_pie(ingresos)
-
-
-        # 2 Ventas por categoría
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("2 Ventas de Productos por Categoria")    
-        
-        # Texto antes de la segunda línea horizontal
-        categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
-        categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
-        categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
-        categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
-
-        # Combo box para seleccionar la tienda
-        opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_categoria")
-
-        if opcionCategoria == TIENDA1:
+            # Texto antes de la segunda línea horizontal
             categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
-            st.subheader("Productos por categoría de Tienda 1")
-            st.dataframe(categorias_tienda1)
-
-        elif opcionCategoria == TIENDA2:
             categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
-            st.subheader("Productos por categoría de Tienda 2")
-            st.dataframe(categorias_tienda2)
-
-        elif opcionCategoria == TIENDA3:
             categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
-            st.subheader("Productos por categoría de Tienda 3")
-            st.dataframe(categorias_tienda3)
-
-        elif opcionCategoria == TIENDA4:
             categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
-            st.subheader("Productos por categoría de Tienda 4")
-            st.dataframe(categorias_tienda4)
-        
-        # Graficar ventas por categoría
-        graficar_barras(categorias_tienda1, categorias_tienda2, categorias_tienda3, categorias_tienda4)        
 
-        # 3 Calificación promedio de la tienda por lo clientes
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("3 Calificación Promedio de Tienda por Clientes")
+            # Combo box para seleccionar la tienda
+            opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_categoria")
 
-        calificacion_promedio1 = calcular_calificacion_promedio(tienda1)
-        calificacion_promedio2 = calcular_calificacion_promedio(tienda2)
-        calificacion_promedio3 = calcular_calificacion_promedio(tienda3)
-        calificacion_promedio4 = calcular_calificacion_promedio(tienda4)
-        
-        col1_calificacion, col2_calificacion = st.columns(2)
-        with col1_calificacion:
-            calificacion_df = pd.DataFrame({
-                'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
-                'Calificación': [calificacion_promedio1, calificacion_promedio2, calificacion_promedio3, calificacion_promedio4]
-            })
+            if opcionCategoria == TIENDA1:
+                categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
+                st.subheader("Productos por categoría de Tienda 1")
+                st.dataframe(categorias_tienda1)
 
-            # Mostrar los ingresos totales por tienda con la tabla centrada
-            st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)                
+            elif opcionCategoria == TIENDA2:
+                categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
+                st.subheader("Productos por categoría de Tienda 2")
+                st.dataframe(categorias_tienda2)
+
+            elif opcionCategoria == TIENDA3:
+                categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
+                st.subheader("Productos por categoría de Tienda 3")
+                st.dataframe(categorias_tienda3)
+
+            elif opcionCategoria == TIENDA4:
+                categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
+                st.subheader("Productos por categoría de Tienda 4")
+                st.dataframe(categorias_tienda4)
             
-            # Estilo de la tabla centrado
-            st.dataframe(
-                calificacion_df.style.set_table_styles([
-                    {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '16px'), ('border', '1px solid black')]},  # Alineación de los encabezados
-                    {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '14px'), ('border', '1px solid black')]},  # Alineación de las celdas
-                    {'selector': 'table', 'props': [('border-collapse', 'collapse')]},  # Unificar bordes de la tabla
-                ])
-            )
+            # Graficar ventas por categoría
+            graficar_barras(categorias_tienda1, categorias_tienda2, categorias_tienda3, categorias_tienda4)        
+
+
+        st.subheader("3 Calificación Promedio de la Tienda por Clientes")        
+        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente                    
+            #st.subheader("3 Calificación Promedio de Tienda por Clientes")
+
+            calificacion_promedio1 = calcular_calificacion_promedio(tienda1)
+            calificacion_promedio2 = calcular_calificacion_promedio(tienda2)
+            calificacion_promedio3 = calcular_calificacion_promedio(tienda3)
+            calificacion_promedio4 = calcular_calificacion_promedio(tienda4)
             
-        with col2_calificacion:
-            # Creando diccionario para poner el promedio de calificaciones por tienda
-            calificaciones = {
-                TIENDA1: calificacion_promedio1,
-                TIENDA2: calificacion_promedio2,
-                TIENDA3: calificacion_promedio3,
-                TIENDA4: calificacion_promedio4
-            }
+            col1_calificacion, col2_calificacion = st.columns(2)
+            with col1_calificacion:
+                calificacion_df = pd.DataFrame({
+                    'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
+                    'Calificación': [calificacion_promedio1, calificacion_promedio2, calificacion_promedio3, calificacion_promedio4]
+                })
 
-            # Ordenar las calificaciones de mejor a peor
-            calificaciones_ordenadas = dict(sorted(calificaciones.items(), key=lambda item: item[1], reverse=True))    
+                # Mostrar los ingresos totales por tienda con la tabla centrada
+                st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)                
+                
+                # Estilo de la tabla centrado
+                st.dataframe(
+                    calificacion_df.style.set_table_styles([
+                        {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '16px'), ('border', '1px solid black')]},  # Alineación de los encabezados
+                        {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '14px'), ('border', '1px solid black')]},  # Alineación de las celdas
+                        {'selector': 'table', 'props': [('border-collapse', 'collapse')]},  # Unificar bordes de la tabla
+                    ])
+                )
+                
+            with col2_calificacion:
+                # Creando diccionario para poner el promedio de calificaciones por tienda
+                calificaciones = {
+                    TIENDA1: calificacion_promedio1,
+                    TIENDA2: calificacion_promedio2,
+                    TIENDA3: calificacion_promedio3,
+                    TIENDA4: calificacion_promedio4
+                }
 
-            # Graficar calificación promedio
-            graficar_linea(calificaciones)
+                # Ordenar las calificaciones de mejor a peor
+                calificaciones_ordenadas = dict(sorted(calificaciones.items(), key=lambda item: item[1], reverse=True))    
+
+                # Graficar calificación promedio
+                graficar_linea(calificaciones)
 
         # 4 Productos Más y Menos Vendidos
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("4 Productos más y menos Vendidos")
+        st.subheader("4 Productos Más y Menos Vendidos")        
+        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente            
+               
+            opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS)
 
-        # 4 Productos más y menos vendidos    
-        opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS)
+            # Mostrar el DataFrame de acuerdo a la tienda seleccionada
+            if opcionCategoria == TIENDA1:
+                productos_df = productos_mas_menos_vendidos(tienda1, TIENDA1)
+            elif opcionCategoria == TIENDA2:
+                productos_df = productos_mas_menos_vendidos(tienda2, TIENDA2)
+            elif opcionCategoria == TIENDA3:
+                productos_df = productos_mas_menos_vendidos(tienda3, TIENDA3)
+            elif opcionCategoria == TIENDA4:
+                productos_df = productos_mas_menos_vendidos(tienda4, TIENDA4)
 
-        # Mostrar el DataFrame de acuerdo a la tienda seleccionada
-        if opcionCategoria == TIENDA1:
-            productos_df = productos_mas_menos_vendidos(tienda1, TIENDA1)
-        elif opcionCategoria == TIENDA2:
-            productos_df = productos_mas_menos_vendidos(tienda2, TIENDA2)
-        elif opcionCategoria == TIENDA3:
-            productos_df = productos_mas_menos_vendidos(tienda3, TIENDA3)
-        elif opcionCategoria == TIENDA4:
-            productos_df = productos_mas_menos_vendidos(tienda4, TIENDA4)
-
-        # Mostrar el DataFrame
-        st.dataframe(productos_df)
-        
-        # # Graficar los productos más y menos vendidos por tienda    
-        graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4)
+            # Mostrar el DataFrame
+            st.dataframe(productos_df)
+            
+            # # Graficar los productos más y menos vendidos por tienda    
+            graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4)
 
         # 5 Costo de envío promedio por tienda
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("5 Costo de Envío Promedio por Tienda")        
-        tienda_1_promedio_costo_envio = calcular_promedio_costo_envio(tienda1)
-        tienda_2_promedio_costo_envio = calcular_promedio_costo_envio(tienda2)
-        tienda_3_promedio_costo_envio = calcular_promedio_costo_envio(tienda3)
-        tienda_4_promedio_costo_envio = calcular_promedio_costo_envio(tienda4)
-
-        col1_costo_envio, col2_costo_envio = st.columns(2)
-        with col1_costo_envio:
-            costo_envio_df = pd.DataFrame({
-                'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
-                'Costo Envío': [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
-            })
-
-            # Mostrar los ingresos totales por tienda con la tabla centrada
-            st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)                
+        st.subheader("5 Costo de Envío Promedio por Tienda")
+        with st.expander("VER", expanded=False):  # La sección puede estar contraída inicialmente            
             
-            # Estilo de la tabla centrado
-            st.dataframe(
-                costo_envio_df.style.set_table_styles([
-                    {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '16px'), ('border', '1px solid black')]},  # Alineación de los encabezados
-                    {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '14px'), ('border', '1px solid black')]},  # Alineación de las celdas
-                    {'selector': 'table', 'props': [('border-collapse', 'collapse')]},  # Unificar bordes de la tabla
-                ])
-            )
+            tienda_1_promedio_costo_envio = calcular_promedio_costo_envio(tienda1)
+            tienda_2_promedio_costo_envio = calcular_promedio_costo_envio(tienda2)
+            tienda_3_promedio_costo_envio = calcular_promedio_costo_envio(tienda3)
+            tienda_4_promedio_costo_envio = calcular_promedio_costo_envio(tienda4)
 
-        with col2_costo_envio:
-            # Gráfico Envío promedio por tienda    
-            tiendas = [TIENDA1, TIENDA2, TIENDA3, TIENDA4]
-            costos_envio = [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
-            graficar_costo_envio_por_tienda(tiendas, costos_envio)
+            col1_costo_envio, col2_costo_envio = st.columns(2)
+            with col1_costo_envio:
+                costo_envio_df = pd.DataFrame({
+                    'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
+                    'Costo Envío': [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
+                })
 
-    # Extra    
-    if opcion == MENU_MAPA_DIS_GEOGRAFICA:  
-        st.subheader("Visualización de la Distribución Geográfica")
+                # Mostrar los ingresos totales por tienda con la tabla centrada
+                st.markdown("<h4 style='text-align: center;'>Resultados</h4>", unsafe_allow_html=True)
+
+                # Estilo de la tabla centrado
+                st.dataframe(
+                    costo_envio_df.style.set_table_styles([
+                        {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '16px'), ('border', '1px solid black')]},  # Alineación de los encabezados
+                        {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '14px'), ('border', '1px solid black')]},  # Alineación de las celdas
+                        {'selector': 'table', 'props': [('border-collapse', 'collapse')]},  # Unificar bordes de la tabla
+                    ])
+                )
+
+            with col2_costo_envio:
+                # Gráfico Envío promedio por tienda
+                tiendas = [TIENDA1, TIENDA2, TIENDA3, TIENDA4]
+                costos_envio = [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
+                graficar_costo_envio_por_tienda(tiendas, costos_envio)
+
+    # EXTRA    
+    if opcion == MENU_MAPA_DIS_GEOGRAFICA:          
+        # Título de la sección        
+        st.markdown("<h2 style='text-align: center;'>Distribución Geográfica</h2>", unsafe_allow_html=True)
 
         # Usar un selectbox para elegir la tienda
         opcionCategoria = st.selectbox("Selecciona una tienda", [TIENDA1, TIENDA2,
              TIENDA3, TIENDA4], key="tienda_mapa")        
-        
-        if opcionCategoria == TIENDA1:
-            st.write("Mostrando mapa para Tienda 1")
-            mapa_tienda1 = crear_mapa_distribucion(tienda1, TIENDA1, COLOR_TIENDA_F1)            
-            html(mapa_tienda1, height=500) 
-        elif opcionCategoria == TIENDA2:
-            st.write("Mostrando mapa para Tienda 2")
-            mapa_tienda2 = crear_mapa_distribucion(tienda2, TIENDA2, COLOR_TIENDA_F2)
-            html(mapa_tienda2, height=500)
-        elif opcionCategoria == TIENDA3:
-            st.write("Mostrando mapa para Tienda 3")
-            mapa_tienda3 = crear_mapa_distribucion(tienda3, TIENDA3, COLOR_TIENDA_F3)
-            html(mapa_tienda3, height=500)
-        elif opcionCategoria == TIENDA4:
-            st.write("Mostrando mapa para Tienda 4")
-            mapa_tienda4 = crear_mapa_distribucion(tienda4, TIENDA4, COLOR_TIENDA_F4)
-            html(mapa_tienda4, height=500)
+        with st.spinner('Cargando el mapa...'):
+            if opcionCategoria == TIENDA1:
+                st.write("Mostrando mapa para Tienda 1")
+                mapa_tienda1 = crear_mapa_distribucion(tienda1, TIENDA1, COLOR_TIENDA_F1)            
+                html(mapa_tienda1, height=500) 
+            elif opcionCategoria == TIENDA2:
+                st.write("Mostrando mapa para Tienda 2")
+                mapa_tienda2 = crear_mapa_distribucion(tienda2, TIENDA2, COLOR_TIENDA_F2)
+                html(mapa_tienda2, height=500)
+            elif opcionCategoria == TIENDA3:
+                st.write("Mostrando mapa para Tienda 3")
+                mapa_tienda3 = crear_mapa_distribucion(tienda3, TIENDA3, COLOR_TIENDA_F3)
+                html(mapa_tienda3, height=500)
+            elif opcionCategoria == TIENDA4:
+                st.write("Mostrando mapa para Tienda 4")
+                mapa_tienda4 = crear_mapa_distribucion(tienda4, TIENDA4, COLOR_TIENDA_F4)
+                html(mapa_tienda4, height=500)
 
 
-    if opcion == MENU_MAPA_CALOR:  
-        st.subheader("Informe de Recomendación")
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("Mapa de Calor")
+    if opcion == MENU_MAPA_CALOR:        
+        # Título de la sección        
+        st.markdown("<h2 style='text-align: center;'>Mapa de Calor</h2>", unsafe_allow_html=True)
+
         # Interfaz de selección de tienda
         opcionCategoria = st.selectbox("Selecciona una tienda para ver el mapa de calor", 
                                     TIENDAS, 
                                     key="tienda_mapa_calor")
+        with st.spinner('Cargando el mapa...'):
 
-        # Mostrar el mapa de calor de la tienda seleccionada
-        if opcionCategoria == TIENDA1:
-            st.write("Mostrando mapa de calor para Tienda 1")
-            mapa_calor_tienda1 = crear_mapa_calor(tienda1, TIENDA1,COLOR_TIENDA_F1)
-            html(mapa_calor_tienda1, height=500)
-        elif opcionCategoria == TIENDA2:
-            st.write("Mostrando mapa de calor para Tienda 2")
-            mapa_calor_tienda2 = crear_mapa_calor(tienda2, TIENDA2,COLOR_TIENDA_F2)
-            html(mapa_calor_tienda2, height=500)
-        elif opcionCategoria == TIENDA3:
-            st.write("Mostrando mapa de calor para Tienda 3")
-            mapa_calor_tienda3 = crear_mapa_calor(tienda3, TIENDA3,COLOR_TIENDA_F3)
-            html(mapa_calor_tienda3, height=500)
-        elif opcionCategoria == TIENDA4:
-            st.write("Mostrando mapa de calor para Tienda 4")
-            mapa_calor_tienda4 = crear_mapa_calor(tienda4, TIENDA4,COLOR_TIENDA_F4)
-            html(mapa_calor_tienda4, height=500)
+            # Mostrar el mapa de calor de la tienda seleccionada
+            if opcionCategoria == TIENDA1:
+                st.write("Mostrando mapa de calor para Tienda 1")
+                mapa_calor_tienda1 = crear_mapa_calor(tienda1, TIENDA1,COLOR_TIENDA_F1)
+                html(mapa_calor_tienda1, height=500)
+            elif opcionCategoria == TIENDA2:
+                st.write("Mostrando mapa de calor para Tienda 2")
+                mapa_calor_tienda2 = crear_mapa_calor(tienda2, TIENDA2,COLOR_TIENDA_F2)
+                html(mapa_calor_tienda2, height=500)
+            elif opcionCategoria == TIENDA3:
+                st.write("Mostrando mapa de calor para Tienda 3")
+                mapa_calor_tienda3 = crear_mapa_calor(tienda3, TIENDA3,COLOR_TIENDA_F3)
+                html(mapa_calor_tienda3, height=500)
+            elif opcionCategoria == TIENDA4:
+                st.write("Mostrando mapa de calor para Tienda 4")
+                mapa_calor_tienda4 = crear_mapa_calor(tienda4, TIENDA4,COLOR_TIENDA_F4)
+                html(mapa_calor_tienda4, height=500)
 
         st.markdown("<hr>", unsafe_allow_html=True)
         # st.subheader("Análisis Geográfico de Ingresos y Calificaciones")
