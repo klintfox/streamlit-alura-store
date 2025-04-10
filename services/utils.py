@@ -2,49 +2,50 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 import streamlit as st
+from config import COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
+from config import TIENDA1, TIENDA2, TIENDA3, TIENDA4, TIENDAS
 
 def graficar_pie(ingresos):
     # Datos para el gráfico de pie
-    labels = ['Tienda 1', 'Tienda 2', 'Tienda 3', 'Tienda 4']
+    labels = TIENDAS
     sizes = [ingresos[0], ingresos[1], ingresos[2], ingresos[3]]
+
+    # Colores personalizados
+    colores = [COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4]
     
     # Crear el gráfico de pie
     plt.figure(figsize=(7, 7))
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+    plt.pie(sizes, labels=labels, colors=colores, autopct='%1.1f%%', startangle=140)
     plt.title("Distribución de Ingresos por Tienda")
     st.pyplot(plt)
 
-def graficar_barras(categorias_tienda1, categorias_tienda2, categorias_tienda3, categorias_tienda4):
-    plt.figure(figsize=(12, 8))
+def graficar_barras(cat1, cat2, cat3, cat4):
+    # Asegurar que todas tengan las mismas categorías y orden
+    categorias = cat1['Categoría'].tolist()
 
-    # Graficar barras para Tienda 1
-    plt.bar(categorias_tienda1['Categoría'], categorias_tienda1['Cantidad de Productos Vendidos'], label='Tienda 1', alpha=0.7)
-    
-    # Graficar barras para Tienda 2
-    plt.bar(categorias_tienda2['Categoría'], categorias_tienda2['Cantidad de Productos Vendidos'], label='Tienda 2', alpha=0.7)
-    
-    # Graficar barras para Tienda 3
-    plt.bar(categorias_tienda3['Categoría'], categorias_tienda3['Cantidad de Productos Vendidos'], label='Tienda 3', alpha=0.7)
-    
-    # Graficar barras para Tienda 4
-    plt.bar(categorias_tienda4['Categoría'], categorias_tienda4['Cantidad de Productos Vendidos'], label='Tienda 4', alpha=0.7)
+    # Extraer los valores de cada tienda
+    valores1 = cat1['Cantidad de Productos Vendidos'].tolist()
+    valores2 = cat2['Cantidad de Productos Vendidos'].tolist()
+    valores3 = cat3['Cantidad de Productos Vendidos'].tolist()
+    valores4 = cat4['Cantidad de Productos Vendidos'].tolist()
 
-    # Configurar el título y las etiquetas
-    plt.title('Cantidad de Productos Vendidos por Categoría en Cada Tienda')
+    x = np.arange(len(categorias))  # Posiciones para cada grupo
+    width = 0.2  # Ancho de cada barra
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(x - 1.5*width, valores1, width, label=TIENDA1, color=COLOR_TIENDA_1)
+    plt.bar(x - 0.5*width, valores2, width, label=TIENDA2, color=COLOR_TIENDA_2)
+    plt.bar(x + 0.5*width, valores3, width, label=TIENDA3, color=COLOR_TIENDA_3)
+    plt.bar(x + 1.5*width, valores4, width, label=TIENDA4, color=COLOR_TIENDA_4)
+
     plt.xlabel('Categoría del Producto')
     plt.ylabel('Cantidad de Productos Vendidos')
-
-    # Rotar las etiquetas del eje X si es necesario
-    plt.xticks(rotation=45, ha='right')
-
-    # Añadir la leyenda
+    plt.title('Cantidad de Productos Vendidos por Categoría en Cada Tienda')
+    plt.xticks(x, categorias, rotation=45, ha='right')
     plt.legend()
-
-    # Mejorar el espaciado
     plt.tight_layout()
-
-    # Mostrar el gráfico
     st.pyplot(plt)
 
 
@@ -91,10 +92,10 @@ def graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4):
     Crear y mostrar los gráficos de los productos más y menos vendidos por tienda.
     """
     # Obtener los productos más y menos vendidos para cada tienda
-    tiend1_mas_vendidos, tiend1_menos_vendidos = obtener_productos_por_tienda(tienda1, "Tienda 1")
-    tiend2_mas_vendidos, tiend2_menos_vendidos = obtener_productos_por_tienda(tienda2, "Tienda 2")
-    tiend3_mas_vendidos, tiend3_menos_vendidos = obtener_productos_por_tienda(tienda3, "Tienda 3")
-    tiend4_mas_vendidos, tiend4_menos_vendidos = obtener_productos_por_tienda(tienda4, "Tienda 4")
+    tiend1_mas_vendidos, tiend1_menos_vendidos = obtener_productos_por_tienda(tienda1, TIENDA1)
+    tiend2_mas_vendidos, tiend2_menos_vendidos = obtener_productos_por_tienda(tienda2, TIENDA2)
+    tiend3_mas_vendidos, tiend3_menos_vendidos = obtener_productos_por_tienda(tienda3, TIENDA3)
+    tiend4_mas_vendidos, tiend4_menos_vendidos = obtener_productos_por_tienda(tienda4, TIENDA4)
 
     # Concatenar los datos de las 4 tiendas para los productos más vendidos
     productos_mas_vendidos = pd.concat([tiend1_mas_vendidos, tiend2_mas_vendidos, tiend3_mas_vendidos, tiend4_mas_vendidos])
@@ -104,23 +105,32 @@ def graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4):
     
     # Crear los gráficos
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+
+    colores_tienda = {
+    'Tienda 1': COLOR_TIENDA_1,
+    'Tienda 2': COLOR_TIENDA_2,
+    'Tienda 3': COLOR_TIENDA_3,
+    'Tienda 4': COLOR_TIENDA_4
+}
     
     # Gráfico para los productos más vendidos
-    sns.barplot(x='Producto', y='Cantidad de cuotas', hue='Tienda', data=productos_mas_vendidos, ax=ax1)
+    sns.barplot(x='Producto', y='Cantidad de cuotas', hue='Tienda', data=productos_mas_vendidos, ax=ax1,
+                palette=colores_tienda)  # Usar la paleta de colores personalizada
     ax1.set_title('Productos Más Vendidos por Tienda')
     ax1.set_xlabel('Producto')
     ax1.set_ylabel('Cantidad de Ventas')
     ax1.set_xticklabels(ax1.get_xticklabels(), rotation=45, ha='right')  # Gira las etiquetas del eje X
     
     # Gráfico para los productos menos vendidos
-    sns.barplot(x='Producto', y='Cantidad de cuotas', hue='Tienda', data=productos_menos_vendidos, ax=ax2)
+    sns.barplot(x='Producto', y='Cantidad de cuotas', hue='Tienda', data=productos_menos_vendidos, ax=ax2,
+                palette=colores_tienda)  # Usar la paleta de colores personalizada
     ax2.set_title('Productos Menos Vendidos por Tienda')
     ax2.set_xlabel('Producto')
     ax2.set_ylabel('Cantidad de Ventas')
     ax2.set_xticklabels(ax2.get_xticklabels(), rotation=45, ha='right')  # Gira las etiquetas del eje X
     
     plt.tight_layout()
-    #plt.show()
+    # Mostrar el gráfico en Streamlit
     st.pyplot(plt)
 
 
@@ -134,9 +144,20 @@ def graficar_costo_envio_por_tienda(tiendas, costos_envio):
     costos_envio: List[float]
         Lista con los promedios de costo de envío correspondientes a cada tienda.
     """
+    # Diccionario de colores por tienda
+    COLORES_TIENDA = {
+        'Tienda 1': COLOR_TIENDA_1,
+        'Tienda 2': COLOR_TIENDA_2,
+        'Tienda 3': COLOR_TIENDA_3,
+        'Tienda 4': COLOR_TIENDA_4
+    }
+
+    # Crear una lista de colores para las barras según el nombre de cada tienda
+    colores = [COLORES_TIENDA[tienda] for tienda in tiendas]
+
     # Crear el gráfico de barras horizontal
     plt.figure(figsize=(8, 6))
-    plt.barh(tiendas, costos_envio, color='skyblue')
+    plt.barh(tiendas, costos_envio, color=colores)
 
     # Agregar títulos y etiquetas
     plt.title('Promedio de Costo de Envío por Tienda', fontsize=14)
@@ -148,5 +169,4 @@ def graficar_costo_envio_por_tienda(tiendas, costos_envio):
         plt.text(valor + 300, i, f'{valor:.2f}', va='center', fontsize=10)
 
     # Mostrar el gráfico
-    #plt.show()
     st.pyplot(plt)

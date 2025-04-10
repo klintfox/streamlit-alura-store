@@ -3,6 +3,10 @@ import os
 import pandas as pd
 from PIL import Image
 
+import streamlit as st
+import streamlit.components.v1 as components
+from streamlit.components.v1 import html
+
 from services.dataloader import cargar_csv
 from services.facturacion import calcular_ingreso_total
 from services.ventas_por_categoria import calcular_categorias_vendidas
@@ -12,17 +16,8 @@ from services.costo_envio_por_tienda import calcular_promedio_costo_envio
 from services.utils import graficar_pie, graficar_barras, graficar_linea, graficar_productos_mas_menos_vendidos, graficar_costo_envio_por_tienda  
 from services.mapa_ubicacion import crear_mapa, crear_mapa_calor
 
-import streamlit as st
-import streamlit.components.v1 as components
-from streamlit.components.v1 import html
-
-
-# Título
-APP_TITLE = "Alura Store"
-# Menú para la aplicación
-MENU_ALURA_STORE = "Alura Store"
-MENU_MAPA_DIS_GEOGRAFICA = "Distribucion Geográfica"
-MENU_MAPA_CALOR = "Mapa Calor"
+from config import APP_TITLE, MENU_ALURA_STORE, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
+from config import TIENDA1, TIENDA2, TIENDA3, TIENDA4, TIENDAS
 
 def configure_page():
     logo = Image.open(os.path.join("assets","logo.ico"))
@@ -68,22 +63,22 @@ def main():
         st.subheader("Datos")
 
         # Combo box para seleccionar la tienda
-        opcion = st.selectbox("Selecciona una tienda", ["Tienda 1", "Tienda 2", "Tienda 3", "Tienda 4"], key="select_tienda_ingresos")
+        opcion = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_ingresos")
 
         # Dependiendo de la tienda seleccionada, mostramos el reporte correspondiente
-        if opcion == "Tienda 1":
+        if opcion == TIENDA1:
             st.subheader("Datos de Tienda 1")
             mostrar_datos_con_paginacion(tienda1)
 
-        elif opcion == "Tienda 2":
+        elif opcion == TIENDA2:
             st.subheader("Datos de Tienda 2")
             mostrar_datos_con_paginacion(tienda2)
 
-        elif opcion == "Tienda 3":
+        elif opcion == TIENDA3:
             st.subheader("Datos de Tienda 3")
             mostrar_datos_con_paginacion(tienda3)
 
-        elif opcion == "Tienda 4":
+        elif opcion == TIENDA4:
             st.subheader("Datos de Tienda 4")
             mostrar_datos_con_paginacion(tienda4)
 
@@ -101,7 +96,7 @@ def main():
             ingreso_tienda4 = calcular_ingreso_total(tienda4)
 
             ingresos_df = pd.DataFrame({
-                'Nro Tienda': ['Tienda 1', 'Tienda 2', 'Tienda 3', 'Tienda 4'],
+                'Nro Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
                 'Ingreso Total': [ingreso_tienda1, ingreso_tienda2, ingreso_tienda3, ingreso_tienda4]
             })
 
@@ -127,31 +122,31 @@ def main():
         st.subheader("2 Ventas de Productos por Categoria")    
         
         # Texto antes de la segunda línea horizontal
-        categorias_tienda1 = calcular_categorias_vendidas(tienda1, "Tienda 1")
-        categorias_tienda2 = calcular_categorias_vendidas(tienda2, "Tienda 2")
-        categorias_tienda3 = calcular_categorias_vendidas(tienda3, "Tienda 3")
-        categorias_tienda4 = calcular_categorias_vendidas(tienda4, "Tienda 4")
+        categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
+        categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
+        categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
+        categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
 
         # Combo box para seleccionar la tienda
-        opcionCategoria = st.selectbox("Selecciona una tienda", ["Tienda 1", "Tienda 2", "Tienda 3", "Tienda 4"], key="select_tienda_categoria")
+        opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS, key="select_tienda_categoria")
 
-        if opcionCategoria == 'Tienda 1':
-            categorias_tienda1 = calcular_categorias_vendidas(tienda1, "Tienda 1")
+        if opcionCategoria == TIENDA1:
+            categorias_tienda1 = calcular_categorias_vendidas(tienda1, TIENDA1)
             st.subheader("Productos por categoría de Tienda 1")
             st.dataframe(categorias_tienda1)
 
-        elif opcionCategoria == 'Tienda 2':
-            categorias_tienda2 = calcular_categorias_vendidas(tienda2, "Tienda 2")
+        elif opcionCategoria == TIENDA2:
+            categorias_tienda2 = calcular_categorias_vendidas(tienda2, TIENDA2)
             st.subheader("Productos por categoría de Tienda 2")
             st.dataframe(categorias_tienda2)
 
-        elif opcionCategoria == 'Tienda 3':
-            categorias_tienda3 = calcular_categorias_vendidas(tienda3, "Tienda 3")
+        elif opcionCategoria == TIENDA3:
+            categorias_tienda3 = calcular_categorias_vendidas(tienda3, TIENDA3)
             st.subheader("Productos por categoría de Tienda 3")
             st.dataframe(categorias_tienda3)
 
-        elif opcionCategoria == 'Tienda 4':
-            categorias_tienda4 = calcular_categorias_vendidas(tienda4, "Tienda 4")
+        elif opcionCategoria == TIENDA4:
+            categorias_tienda4 = calcular_categorias_vendidas(tienda4, TIENDA4)
             st.subheader("Productos por categoría de Tienda 4")
             st.dataframe(categorias_tienda4)
         
@@ -170,7 +165,7 @@ def main():
         col1_calificacion, col2_calificacion = st.columns(2)
         with col1_calificacion:
             calificacion_df = pd.DataFrame({
-                'Tienda': ['Tienda 1', 'Tienda 2', 'Tienda 3', 'Tienda 4'],
+                'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
                 'Calificación': [calificacion_promedio1, calificacion_promedio2, calificacion_promedio3, calificacion_promedio4]
             })
 
@@ -189,10 +184,10 @@ def main():
         with col2_calificacion:
             # Creando diccionario para poner el promedio de calificaciones por tienda
             calificaciones = {
-                'Tienda 1': calificacion_promedio1,
-                'Tienda 2': calificacion_promedio2,
-                'Tienda 3': calificacion_promedio3,
-                'Tienda 4': calificacion_promedio4
+                TIENDA1: calificacion_promedio1,
+                TIENDA2: calificacion_promedio2,
+                TIENDA3: calificacion_promedio3,
+                TIENDA4: calificacion_promedio4
             }
 
             # Ordenar las calificaciones de mejor a peor
@@ -206,17 +201,17 @@ def main():
         st.subheader("4 Productos más y menos Vendidos")
 
         # 4 Productos más y menos vendidos    
-        opcionCategoria = st.selectbox("Selecciona una tienda", ["Tienda 1", "Tienda 2", "Tienda 3", "Tienda 4"])
+        opcionCategoria = st.selectbox("Selecciona una tienda", TIENDAS)
 
         # Mostrar el DataFrame de acuerdo a la tienda seleccionada
-        if opcionCategoria == "Tienda 1":
-            productos_df = productos_mas_menos_vendidos(tienda1, "Tienda 1")
-        elif opcionCategoria == "Tienda 2":
-            productos_df = productos_mas_menos_vendidos(tienda2, "Tienda 2")
-        elif opcionCategoria == "Tienda 3":
-            productos_df = productos_mas_menos_vendidos(tienda3, "Tienda 3")
-        elif opcionCategoria == "Tienda 4":
-            productos_df = productos_mas_menos_vendidos(tienda4, "Tienda 4")
+        if opcionCategoria == TIENDA1:
+            productos_df = productos_mas_menos_vendidos(tienda1, TIENDA1)
+        elif opcionCategoria == TIENDA2:
+            productos_df = productos_mas_menos_vendidos(tienda2, TIENDA2)
+        elif opcionCategoria == TIENDA3:
+            productos_df = productos_mas_menos_vendidos(tienda3, TIENDA3)
+        elif opcionCategoria == TIENDA4:
+            productos_df = productos_mas_menos_vendidos(tienda4, TIENDA4)
 
         # Mostrar el DataFrame
         st.dataframe(productos_df)
@@ -235,7 +230,7 @@ def main():
         col1_costo_envio, col2_costo_envio = st.columns(2)
         with col1_costo_envio:
             costo_envio_df = pd.DataFrame({
-                'Tienda': ['Tienda 1', 'Tienda 2', 'Tienda 3', 'Tienda 4'],
+                'Tienda': [TIENDA1, TIENDA2, TIENDA3, TIENDA4],
                 'Costo Envío': [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
             })
 
@@ -253,39 +248,33 @@ def main():
 
         with col2_costo_envio:
             # Gráfico Envío promedio por tienda    
-            tiendas = ['Tienda 1', 'Tienda 2', 'Tienda 3', 'Tienda 4']
+            tiendas = [TIENDA1, TIENDA2, TIENDA3, TIENDA4]
             costos_envio = [tienda_1_promedio_costo_envio, tienda_2_promedio_costo_envio, tienda_3_promedio_costo_envio, tienda_4_promedio_costo_envio]
             graficar_costo_envio_por_tienda(tiendas, costos_envio)
-
-    # Definir el color de los íconos para cada tienda
-    color_tienda1 = 'blue'
-    color_tienda2 = 'green'
-    color_tienda3 = 'red'
-    color_tienda4 = 'purple'
 
     # Extra    
     if opcion == MENU_MAPA_DIS_GEOGRAFICA:  
         st.subheader("Visualización de la Distribución Geográfica")
 
         # Usar un selectbox para elegir la tienda
-        opcionCategoria = st.selectbox("Selecciona una tienda", ["Tienda 1", "Tienda 2",
-             "Tienda 3", "Tienda 4"], key="tienda_mapa")        
+        opcionCategoria = st.selectbox("Selecciona una tienda", [TIENDA1, TIENDA2,
+             TIENDA3, TIENDA4], key="tienda_mapa")        
         
-        if opcionCategoria == "Tienda 1":
+        if opcionCategoria == TIENDA1:
             st.write("Mostrando mapa para Tienda 1")
-            mapa_tienda1 = crear_mapa(tienda1, "Tienda 1", color_tienda1)            
+            mapa_tienda1 = crear_mapa(tienda1, TIENDA1, COLOR_TIENDA_1)            
             html(mapa_tienda1, height=500) 
-        elif opcionCategoria == "Tienda 2":
+        elif opcionCategoria == TIENDA2:
             st.write("Mostrando mapa para Tienda 2")
-            mapa_tienda2 = crear_mapa(tienda2, "Tienda 2", color_tienda2)
+            mapa_tienda2 = crear_mapa(tienda2, TIENDA2, COLOR_TIENDA_2)
             html(mapa_tienda2, height=500)
-        elif opcionCategoria == "Tienda 3":
+        elif opcionCategoria == TIENDA3:
             st.write("Mostrando mapa para Tienda 3")
-            mapa_tienda3 = crear_mapa(tienda3, "Tienda 3", color_tienda3)
+            mapa_tienda3 = crear_mapa(tienda3, TIENDA3, COLOR_TIENDA_3)
             html(mapa_tienda3, height=500)
-        elif opcionCategoria == "Tienda 4":
+        elif opcionCategoria == TIENDA4:
             st.write("Mostrando mapa para Tienda 4")
-            mapa_tienda4 = crear_mapa(tienda4, "Tienda 4", color_tienda4)
+            mapa_tienda4 = crear_mapa(tienda4, TIENDA4, COLOR_TIENDA_4)
             html(mapa_tienda4, height=500)
 
 
@@ -295,25 +284,25 @@ def main():
         st.subheader("Mapa de Calor")
         # Interfaz de selección de tienda
         opcionCategoria = st.selectbox("Selecciona una tienda para ver el mapa de calor", 
-                                    ["Tienda 1", "Tienda 2", "Tienda 3", "Tienda 4"], 
+                                    TIENDAS, 
                                     key="tienda_mapa_calor")
 
         # Mostrar el mapa de calor de la tienda seleccionada
-        if opcionCategoria == "Tienda 1":
+        if opcionCategoria == TIENDA1:
             st.write("Mostrando mapa de calor para Tienda 1")
-            mapa_calor_tienda1 = crear_mapa_calor(tienda1, "Tienda 1",color_tienda1)
+            mapa_calor_tienda1 = crear_mapa_calor(tienda1, TIENDA1,COLOR_TIENDA_1)
             html(mapa_calor_tienda1, height=500)
-        elif opcionCategoria == "Tienda 2":
+        elif opcionCategoria == TIENDA2:
             st.write("Mostrando mapa de calor para Tienda 2")
-            mapa_calor_tienda2 = crear_mapa_calor(tienda2, "Tienda 2",color_tienda2)
+            mapa_calor_tienda2 = crear_mapa_calor(tienda2, TIENDA2,COLOR_TIENDA_2)
             html(mapa_calor_tienda2, height=500)
-        elif opcionCategoria == "Tienda 3":
+        elif opcionCategoria == TIENDA3:
             st.write("Mostrando mapa de calor para Tienda 3")
-            mapa_calor_tienda3 = crear_mapa_calor(tienda3, "Tienda 3",color_tienda3)
+            mapa_calor_tienda3 = crear_mapa_calor(tienda3, TIENDA3,COLOR_TIENDA_3)
             html(mapa_calor_tienda3, height=500)
-        elif opcionCategoria == "Tienda 4":
+        elif opcionCategoria == TIENDA4:
             st.write("Mostrando mapa de calor para Tienda 4")
-            mapa_calor_tienda4 = crear_mapa_calor(tienda4, "Tienda 4",color_tienda4)
+            mapa_calor_tienda4 = crear_mapa_calor(tienda4, TIENDA4,COLOR_TIENDA_4)
             html(mapa_calor_tienda4, height=500)
 
         st.markdown("<hr>", unsafe_allow_html=True)
