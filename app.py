@@ -291,19 +291,19 @@ def main():
         # Mostrar el mapa de calor de la tienda seleccionada
         if opcionCategoria == TIENDA1:
             st.write("Mostrando mapa de calor para Tienda 1")
-            mapa_calor_tienda1 = crear_mapa_calor(tienda1, TIENDA1,COLOR_TIENDA_1)
+            mapa_calor_tienda1 = crear_mapa_calor(tienda1, TIENDA1,COLOR_TIENDA_F1)
             html(mapa_calor_tienda1, height=500)
         elif opcionCategoria == TIENDA2:
             st.write("Mostrando mapa de calor para Tienda 2")
-            mapa_calor_tienda2 = crear_mapa_calor(tienda2, TIENDA2,COLOR_TIENDA_2)
+            mapa_calor_tienda2 = crear_mapa_calor(tienda2, TIENDA2,COLOR_TIENDA_F2)
             html(mapa_calor_tienda2, height=500)
         elif opcionCategoria == TIENDA3:
             st.write("Mostrando mapa de calor para Tienda 3")
-            mapa_calor_tienda3 = crear_mapa_calor(tienda3, TIENDA3,COLOR_TIENDA_3)
+            mapa_calor_tienda3 = crear_mapa_calor(tienda3, TIENDA3,COLOR_TIENDA_F3)
             html(mapa_calor_tienda3, height=500)
         elif opcionCategoria == TIENDA4:
             st.write("Mostrando mapa de calor para Tienda 4")
-            mapa_calor_tienda4 = crear_mapa_calor(tienda4, TIENDA4,COLOR_TIENDA_4)
+            mapa_calor_tienda4 = crear_mapa_calor(tienda4, TIENDA4,COLOR_TIENDA_F4)
             html(mapa_calor_tienda4, height=500)
 
         st.markdown("<hr>", unsafe_allow_html=True)
