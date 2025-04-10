@@ -4,7 +4,7 @@ from folium.plugins import HeatMap
 from streamlit.components.v1 import html
 
 # Función para crear un mapa de puntos
-def crear_mapa(tienda, tienda_nombre, color_icono):
+def crear_mapa_distribucion(tienda, tienda_nombre, color_icono):
     # Promedio de latitudes y longitudes de la tienda
     prom_lat = tienda['lat'].mean()
     prom_lon = tienda['lon'].mean()

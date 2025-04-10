@@ -7,6 +7,8 @@ import streamlit as st
 from config import COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
 from config import TIENDA1, TIENDA2, TIENDA3, TIENDA4, TIENDAS
 
+from services.productos_vendidos import obtener_productos_por_tienda
+
 def graficar_pie(ingresos):
     # Datos para el gráfico de pie
     labels = TIENDAS
@@ -59,38 +61,7 @@ def graficar_linea(calificaciones_ordenadas):
     #plt.show()
     st.pyplot(plt)
 
-def obtener_productos_por_tienda(tienda, tienda_nombre):
-    """
-    Obtener los productos más y menos vendidos por tienda.
-    
-    tienda: DataFrame
-        El DataFrame de la tienda que contiene las columnas 'Producto' y 'Cantidad de cuotas'.
-    
-    tienda_nombre: str
-        El nombre de la tienda para identificarla en los resultados.
-    
-    Retorna dos DataFrames: productos más vendidos y productos menos vendidos.
-    """
-    # Agrupar los datos por 'Producto' y sumar la cantidad de ventas
-    productos_ventas = tienda.groupby('Producto')['Cantidad de cuotas'].sum().reset_index()
-    
-    # Ordenar por la cantidad de ventas en orden descendente
-    productos_ventas = productos_ventas.sort_values(by='Cantidad de cuotas', ascending=False)
-    
-    # Obtener los 5 productos más vendidos
-    productos_mas_vendidos = productos_ventas.head(5)
-    productos_mas_vendidos['Tienda'] = tienda_nombre
-    
-    # Obtener los 5 productos menos vendidos
-    productos_menos_vendidos = productos_ventas.tail(5)
-    productos_menos_vendidos['Tienda'] = tienda_nombre
-    
-    return productos_mas_vendidos, productos_menos_vendidos
-
 def graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4):
-    """
-    Crear y mostrar los gráficos de los productos más y menos vendidos por tienda.
-    """
     # Obtener los productos más y menos vendidos para cada tienda
     tiend1_mas_vendidos, tiend1_menos_vendidos = obtener_productos_por_tienda(tienda1, TIENDA1)
     tiend2_mas_vendidos, tiend2_menos_vendidos = obtener_productos_por_tienda(tienda2, TIENDA2)
@@ -107,11 +78,11 @@ def graficar_productos_mas_menos_vendidos(tienda1, tienda2, tienda3, tienda4):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
 
     colores_tienda = {
-    'Tienda 1': COLOR_TIENDA_1,
-    'Tienda 2': COLOR_TIENDA_2,
-    'Tienda 3': COLOR_TIENDA_3,
-    'Tienda 4': COLOR_TIENDA_4
-}
+        'Tienda 1': COLOR_TIENDA_1,
+        'Tienda 2': COLOR_TIENDA_2,
+        'Tienda 3': COLOR_TIENDA_3,
+        'Tienda 4': COLOR_TIENDA_4
+    }
     
     # Gráfico para los productos más vendidos
     sns.barplot(x='Producto', y='Cantidad de cuotas', hue='Tienda', data=productos_mas_vendidos, ax=ax1,

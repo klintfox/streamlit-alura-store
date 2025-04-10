@@ -2,6 +2,24 @@
 
 import pandas as pd
 
+def obtener_productos_por_tienda(tienda, tienda_nombre):
+    # Agrupar los datos por 'Producto' y sumar la cantidad de ventas
+    productos_ventas = tienda.groupby('Producto')['Cantidad de cuotas'].sum().reset_index()
+    
+    # Ordenar por la cantidad de ventas en orden descendente
+    productos_ventas = productos_ventas.sort_values(by='Cantidad de cuotas', ascending=False)
+    
+    # Obtener los 5 productos más vendidos
+    productos_mas_vendidos = productos_ventas.head(5)
+    productos_mas_vendidos['Tienda'] = tienda_nombre
+    
+    # Obtener los 5 productos menos vendidos
+    productos_menos_vendidos = productos_ventas.tail(5)
+    productos_menos_vendidos['Tienda'] = tienda_nombre
+    
+    return productos_mas_vendidos, productos_menos_vendidos
+
+
 def productos_mas_menos_vendidos(tienda, tienda_nombre):
     """
     Calcular y mostrar los productos más y menos vendidos de una tienda.

@@ -14,10 +14,11 @@ from services.calificacion_promedio import calcular_calificacion_promedio
 from services.productos_vendidos import productos_mas_menos_vendidos
 from services.costo_envio_por_tienda import calcular_promedio_costo_envio
 from services.utils import graficar_pie, graficar_barras, graficar_linea, graficar_productos_mas_menos_vendidos, graficar_costo_envio_por_tienda  
-from services.mapa_ubicacion import crear_mapa, crear_mapa_calor
+from services.mapa_ubicacion import crear_mapa_distribucion, crear_mapa_calor
 
-from config import APP_TITLE, MENU_ALURA_STORE, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
+from config import APP_TITLE, MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR, COLOR_TIENDA_1, COLOR_TIENDA_2, COLOR_TIENDA_3, COLOR_TIENDA_4
 from config import TIENDA1, TIENDA2, TIENDA3, TIENDA4, TIENDAS
+from config import COLOR_TIENDA_F1, COLOR_TIENDA_F2, COLOR_TIENDA_F3, COLOR_TIENDA_F4
 
 def configure_page():
     logo = Image.open(os.path.join("assets","logo.ico"))
@@ -52,12 +53,12 @@ tienda4 = cargar_csv(url4)
 def main():
     configure_page()
     menu = [
-        MENU_ALURA_STORE, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR
+        MENU_DATA_ANALYTICS, MENU_MAPA_DIS_GEOGRAFICA, MENU_MAPA_CALOR
     ]
 
     opcion = st.sidebar.selectbox("Selecciona una opción", menu)
 
-    if opcion == MENU_ALURA_STORE:
+    if opcion == MENU_DATA_ANALYTICS:
 
         # Título de la sección
         st.subheader("Datos")
@@ -262,19 +263,19 @@ def main():
         
         if opcionCategoria == TIENDA1:
             st.write("Mostrando mapa para Tienda 1")
-            mapa_tienda1 = crear_mapa(tienda1, TIENDA1, COLOR_TIENDA_1)            
+            mapa_tienda1 = crear_mapa_distribucion(tienda1, TIENDA1, COLOR_TIENDA_F1)            
             html(mapa_tienda1, height=500) 
         elif opcionCategoria == TIENDA2:
             st.write("Mostrando mapa para Tienda 2")
-            mapa_tienda2 = crear_mapa(tienda2, TIENDA2, COLOR_TIENDA_2)
+            mapa_tienda2 = crear_mapa_distribucion(tienda2, TIENDA2, COLOR_TIENDA_F2)
             html(mapa_tienda2, height=500)
         elif opcionCategoria == TIENDA3:
             st.write("Mostrando mapa para Tienda 3")
-            mapa_tienda3 = crear_mapa(tienda3, TIENDA3, COLOR_TIENDA_3)
+            mapa_tienda3 = crear_mapa_distribucion(tienda3, TIENDA3, COLOR_TIENDA_F3)
             html(mapa_tienda3, height=500)
         elif opcionCategoria == TIENDA4:
             st.write("Mostrando mapa para Tienda 4")
-            mapa_tienda4 = crear_mapa(tienda4, TIENDA4, COLOR_TIENDA_4)
+            mapa_tienda4 = crear_mapa_distribucion(tienda4, TIENDA4, COLOR_TIENDA_F4)
             html(mapa_tienda4, height=500)
 
 
